@@ -264,5 +264,16 @@ static void RLMNSStringToStdString(std::string &out, NSString *in) {
     _config.schema_mode = mode;
 }
 
-@end
+- (void)setShouldCompactOnLaunchBlock:(RLMShouldCompactOnLaunchBlock)shouldCompactOnLaunchBlock {
+    _shouldCompactOnLaunchBlock = shouldCompactOnLaunchBlock;
+    if (shouldCompactOnLaunchBlock) {
+        _config.should_compact_on_launch_function = nullptr;
+    }
+    else {
+        _config.should_compact_on_launch_function = [=](size_t totalBytes, size_t usedBytes) {
+            return shouldCompactOnLaunchBlock(totalBytes, usedBytes);
+        };
+    }
+}
 
+@end
